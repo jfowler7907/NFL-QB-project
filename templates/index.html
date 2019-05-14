@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -36,40 +36,26 @@
 <div class="bg">
   <div class="container" style="padding-top:100px">
     <div class="jumbotron" style="background: rgba(0, 10, 10, 0.5);">
-      <h1 style="color:white; margin-top:-45px">Search Quaterbacks</h1>
+      <h1 style="color:white; margin-top:-45px">Welcome to Our NFL QB App!</h1>
       <br>
-        <h2 style="color:white">How you can seach:</h2>
-          <h6 style="color:white">You can either search for quaterbacks based on <b>Draft Year</b> or <b>Quaterback Name.</b></h6>
+        <h2 style="color:white">What is the purpose of this app?</h2>
+          <h6 style="color:white">The purpose of this project is to determine if draft round or pick number are an indicator of a quartback's future success in the NFL. <br>
+            The quarterback's key stats will be compared to league averages as well as the best quarterbacks in the league as decided by average QBR <br>
+            and visualized in an easy to use, easy to read, interactive dashboard. You will be able to seach by quarterback name or by draft year.</h6>
         <br>
-        <h2 style="color:white">Search Criteria:</h2>
-        <h6 style="color:white">Seach by Draft Year
-          <fieldset style="margin-bottom:-10px">
-            <div class="col-lg-3" style="margin-left:-15px">
-            <div class="form-group">
-              <select class="custom-select">
-              <option id="draftyear" selected="">Choose a Draft Year</option>
-              <!--Insert JS to append possible draft years based on API Call  -->
-            </select>
-            <div class="btn-group-vertical" data-toggle="buttons">
-                <button type="button" class="btn btn-primary">Search</button></div>
-          </div>
-          </div>
-        </fieldset></h6>
-        <h4 style="color:white">OR</h4>
-          <h6 style="color:white; margin-bottom:-45px">Choose a Quaterback:
-            <fieldset>
-              <div class="col-lg-3" style="margin-left:-15px">
-              <div class="form-group">
-              <select class="custom-select">
-                <option selected="">Choose a Quaterback</option>
-                <option id="playerNames" value="1">Value</option>
-              </select>
-              <div class="btn-group-vertical" data-toggle="buttons">
-                  <button type="button" class="btn btn-primary">Search</button></div>
-            </div>
-            </div>
-          </fieldset>
-            </h6>
+        <h2 style="color:white">What technologies were used?</h2>
+        <h6 style="color:white">The following front-end languages were used:
+          <ul style="color:white">
+            <li>HTML5</li>
+            <li>CSS</li>
+            <li>JavaScript</li>
+          </ul></h6>
+          <h6 style="color:white; margin-bottom:-45px">The following back-end platforms were used:
+            <ul style="color:white">
+              <li>Flask</li>
+              <li>Sqlite3</li>
+              <li>Heroku</li>
+            </ul></h6>
 
     </div>
   </div>
