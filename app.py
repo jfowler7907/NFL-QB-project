@@ -84,8 +84,9 @@ def home():
 #
 #     return jsonify(nfl_dict)
 #
-@app.route("/search")
+@app.route("/search/")
 def search():
+    return render_template("search.html")
  #     # session = Session(engine)
  #     # results2 = session.query(Stats.Player,Stats.Year_Drafted, Stats.Round_Drafted,
  #     #                         Stats.Overall_Pick, Stats.Draft_Position,
@@ -96,7 +97,6 @@ def search():
  #
  #
  #
-     return render_template("search.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
