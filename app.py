@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify, render_template
 import sqlite3
+import pandas as pd
 
 
 #################################################
@@ -97,6 +98,65 @@ def search():
  #
  #
  #
+
+
+@app.route("/search/<stats>")
+def qb_stats2(stats):
+    #Return the round for a given player
+    session=Session(engine)
+    sel = [
+        Stats.stats,
+        Stats.Player,
+        Stats.Year_Drafted,
+        Stats.Round_Drafted,
+        Stats.Overall_Pick,
+        Stats.Draft_Position,
+        Stats.Avg_Attempts,
+        Stats.Avg_Completions,
+        Stats.Avg_Passing_Yards,
+        Stats.Avg_Yards_per_Attempt,
+        Stats.Avg_TDs,
+        Stats.Avg_Sacks,
+        Stats.Avg_Loss_of_Yards,
+        Stats.Avg_QBR_REAL,
+        Stats.Avg_Points,
+        Stats.Game_Total,
+    ] 
+
+    results = session.query(*sel).filter(Stats.stats == stats).groupby("Round_Drafted")
+
+
+@app.route("/names")
+def names():
+    """Return a list of player names."""
+    session = Session(engine)
+    players = session.query(Stats.Player).all()
+    playerList = []
+    for x in players:
+        playerList.append(str(x[0]))
+
+    #  Use Pandas to perform the sql query
+    #stmt = session.query(Stats.Player).statement
+    #df = pd.read_sql_query(stmt, session.bind)
+
+    # Return a list of the column names (sample names)
+    return jsonify(playerList)
+
+@app.route("/rounds")
+def rounds():
+    """Return a list of player names."""
+    session = Session(engine)
+    rounds = session.query(Stats.Round_Drafted).distinct()
+    roundList = []
+    for x in rounds:
+        roundList.append(x[0])
+
+    #  Use Pandas to perform the sql query
+    #stmt = session.query(Stats.Player).statement
+    #df = pd.read_sql_query(stmt, session.bind)
+
+    # Return a list of the column names (sample names)
+    return jsonify(roundList)
 
 if __name__ == '__main__':
     app.run(debug=True)
