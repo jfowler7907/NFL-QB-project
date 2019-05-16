@@ -44,8 +44,8 @@
         <h6 style="color:white">Seach by Draft Round
           <fieldset style="margin-bottom:-10px">
             <div class="form-group">
-              <select class="custom-select">
-              <option id="draftround" selected="">Choose a Draft Round</option>
+              <select  id="draftround" class="custom-select">
+              <option selected="">Choose a Draft Round</option>
               <!--Insert JS to append possible draft years based on API Call  -->
             </select>
           </div>
@@ -56,8 +56,8 @@
           <h6 style="color:white; margin-bottom:-45px">Choose a Quaterback:
             <fieldset>
               <div class="form-group">
-              <select class="custom-select">
-                <option id="playerNames" selected="">Choose a Quaterback</option>
+              <select id="playerNames" class="custom-select">
+                <option selected="">Choose a Quaterback</option>
               </select>
             </div>
           </fieldset>
@@ -67,7 +67,7 @@
     </div>
     <div class="row">
      <div class="col-md-12">
-       <div id="roundChart">
+       <div id="roundbar">
          <!-- Placeholder for Draft Round comparison chart -->
        </div>
     </div>
@@ -80,5 +80,7 @@
   </div>
 </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
   </body>
 </html>
