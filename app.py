@@ -121,7 +121,7 @@ def qb_stats2(stats):
         Stats.Avg_QBR_REAL,
         Stats.Avg_Points,
         Stats.Game_Total,
-    ] 
+    ]
 
     results = session.query(*sel).filter(Stats.stats == stats).groupby("Round_Drafted")
 
@@ -146,7 +146,7 @@ def names():
 def rounds():
     """Return a list of player names."""
     session = Session(engine)
-    rounds = session.query(Stats.Round_Drafted).distinct()
+    rounds = session.query(Stats.Round_Drafted).distinct().order_by(Stats.Round_Drafted.asc())
     roundList = []
     for x in rounds:
         roundList.append(x[0])
