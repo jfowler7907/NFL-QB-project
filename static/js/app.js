@@ -38,6 +38,9 @@ function init() {
       .append("option")
       .text(round)
       .property("value", round);
+    console.log(round);
   });
  });
 }
+
+init();
