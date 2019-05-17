@@ -42,49 +42,43 @@ def home():
     return render_template("index.html")
 
 
-# @app.route("/api/v1.1/jsonified")
-# def stations():
-#     """Return a list of all stations"""
-#     session = Session(engine)
-#     results = session.query(Stats.Player,Stats.Year_Drafted, Stats.Round_Drafted,
-#                             Stats.Overall_Pick, Stats.Draft_Position,
-#                             Stats.Avg_Attempts, Stats.Avg_Completions,
-#                             Stats.Avg_Passing_Yards, Stats.Avg_Yards_per_Attempt,
-#                             Stats.Avg_TDs, Stats.Avg_Sacks, Stats.Avg_Loss_of_Yards,
-#                             Stats.Avg_QBR_REAL, Stats.Avg_Points, Stats.Game_Total ).all()
-#
-#     player_names = []
-#     stats_list = []
-#     player_dict = {}
-#
-#     for a in results:
-#         player_names.append(str(a[0]))
-#
-#     # for a in player_names:
-#     # for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o in results:
-#     #     roster_dict["Player"]=a
-#     for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o in results:
-#         player_dict["Year_Drafted"] = b
-#         player_dict["Round_Drafted"] = c
-#         player_dict["Overall_Pick"] = d
-#         player_dict["Draft_Position"] = e
-#         player_dict["Avg_Attempts"] = f
-#         player_dict["Avg_Completions"] = g
-#         player_dict["Avg_Passing_Yards"] = h
-#         player_dict["Avg_Yards_per_Attempt"] = i
-#         player_dict["Avg_TDs"] = j
-#         player_dict["Avg_Sacks"] = k
-#         player_dict["Avg_Loss_of_Yards"] = l
-#         player_dict["Avg_QBR"] = m
-#         player_dict["Avg_Points"] = n
-#         player_dict["Game_Total"] = o
-#
-#
-#         stats_list.append(player_dict)
-#     nfl_dict = dict(zip(player_names,stats_list))
-#
-#     return jsonify(nfl_dict)
-#
+@app.route("/bar/")
+def bar():
+    """Return a list of all stats"""
+    session = Session(engine)
+    sel = [Stats.Round_Drafted,func.avg(Stats.Avg_Completions),
+    func.avg(Stats.Avg_Passing_Yards),func.avg(Stats.Avg_Yards_per_Attempt),
+    func.avg(Stats.Avg_TDs),func.avg(Stats.Avg_Sacks),
+    func.avg(Stats.Avg_Loss_of_Yards),func.avg(Stats.Avg_QBR_REAL),
+    func.avg(Stats.Avg_Points),func.avg(Stats.Game_Total),
+    func.avg(Stats.Avg_Attempts)]
+
+    results = session.query(*sel).group_by(Stats.Round_Drafted).all()
+    
+    draft_round = []
+    stats_list = []
+
+    for a in results:
+        player_dict = {}
+        draft_round.append(str(a[0]))
+        player_dict["Avg_Attempts"] = a[1]
+        player_dict["Avg_Completions"] = a[2]
+        player_dict["Avg_Passing_Yards"] = a[3]
+        player_dict["Avg_Yards_per_Attempt"] = a[4]
+        player_dict["Avg_TDs"] = a[5]
+        player_dict["Avg_Sacks"] = a[6]
+        player_dict["Avg_Loss_of_Yards"] = a[7]
+        player_dict["Avg_QBR"] = a[8]
+        player_dict["Avg_Points"] = a[9]
+        player_dict["Game_Total"] = a[10]
+
+        stats_list.append(player_dict)
+
+    nfl_dict = dict(zip(draft_round,stats_list))
+    nfl_dict
+
+    return jsonify(nfl_dict)
+
 @app.route("/search/")
 def search():
     return render_template("search.html")
@@ -157,6 +151,7 @@ def rounds():
 
     # Return a list of the column names (sample names)
     return jsonify(roundList)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
