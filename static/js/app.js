@@ -145,7 +145,7 @@ function init() {
 function optionChanged(newData) {
   // Fetch new data each time a new sample is selected
   var stringData = String(newData)
-  if (stringData == "1" || "2" || "3" || "4" || "5" || "6" || "7") {
+  if (stringData == "1" || stringData == "2" || stringData == "3" || stringData == "4" || stringData == "5" || stringData == "6" || stringData == "7") {
     buildBar(stringData)
     // buildTable(stringData)
   } else {
@@ -166,7 +166,7 @@ function buildBar(bdata) {
 
   d3.json('/bar').then((barData) => {
     barData.forEach((round) => {
-      let selectedData = "Avg_QBR"
+      let selectedData = "Avg_Attempts"
       round.Draft_Round = round.Draft_Round
       round[`${selectedData}`] = +round[`${selectedData}`]
     })
@@ -178,8 +178,7 @@ function buildBar(bdata) {
    }
 }
 
-    let selectedData = "Avg_QBR"
-
+    let selectedData = "Avg_Attempts"
     var xBandScale = d3.scaleBand()
     .domain(barData.map(d => d.Draft_Round))
     .range([0, chartWidth])
@@ -257,7 +256,11 @@ function buildBar(bdata) {
 
     var dropdown = d3.select("#roundbar")
                     .insert("select", "svg")
-                    .on("change", dropdownChange);
+                    .on("change", function() {
+                        var newStat = d3.select(this).property('value')
+                        // var newStatData = barData[]
+                        console.log(newStat);
+                      });
 
     dropdown.selectAll("option")
           .data(statSelect)
@@ -266,17 +269,6 @@ function buildBar(bdata) {
           .text(function (d) {
             return d;});
 
-
-    var dropdownChange = function() {
-        var newStat = d3.select(this).property('value')
-        console.log(newStat);
-        //   newStatData = barData.forEach((round) => {
-        //     let selectedData = newstat
-        //     round.Draft_Round = round.Draft_Round
-        //     round[`${selectedData}`] = +round[`${selectedData}`]
-        //   })
-        // updateBars(newStatData);
-      }
 
   //   //
   //
