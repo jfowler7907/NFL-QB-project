@@ -54,13 +54,13 @@ def bar():
     func.avg(Stats.Avg_Attempts)]
 
     results = session.query(*sel).group_by(Stats.Round_Drafted).all()
-    
+
     draft_round = []
     stats_list = []
 
     for a in results:
         player_dict = {}
-        draft_round.append(str(a[0]))
+        player_dict["Draft_Round"] = a[0]
         player_dict["Avg_Attempts"] = a[1]
         player_dict["Avg_Completions"] = a[2]
         player_dict["Avg_Passing_Yards"] = a[3]
@@ -74,10 +74,7 @@ def bar():
 
         stats_list.append(player_dict)
 
-    nfl_dict = dict(zip(draft_round,stats_list))
-    nfl_dict
-
-    return jsonify(nfl_dict)
+    return jsonify(stats_list)
 
 @app.route("/search/")
 def search():
