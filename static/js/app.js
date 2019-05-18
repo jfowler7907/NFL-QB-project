@@ -14,98 +14,8 @@ var chartMargin = {
 var chartWidth = svgWidth - chartMargin.left - chartMargin.right;
 var chartHeight = svgHeight - chartMargin.top - chartMargin.bottom;
 
-
-
-// function buildTable(tdata) {
-//   roundTable.html('')
-//     .append('tbody');
-//   let tbody = d3.select('tbody')
-//   tdata.forEach((data) => {
-//     var row = tbody.append("tr");
-//     Object.values(data).forEach((value) => {
-//      var cell = row.append("td");
-//      cell.text(value);
-//    });
-//  });
-// };
-
-// function buildBar(bdata) {
-//   var svg = d3.select("#roundbar")
-//     .append("svg")
-//     .attr("height", svgHeight)
-//     .attr("width", svgWidth);
-//
-//   var chartGroup = svg.append("g")
-//     .attr("transform", `translate(${chartMargin.left}, ${chartMargin.top})`);
-//
-//   d3.json('/bar').then((barData) => {
-//
-//     rounds = []
-//     Object.keys(barData).forEach(function(key) {
-//       rounds.push(key);
-//     });
-//     let selectedData = "Avg_QBR"
-//     selectedStats = []
-//     Object.entries(barData).forEach(function(entry) {
-//         selectedStats.push(entry[1][selectedData])
-//     });
-//
-//     let maxStat = Math.max(selectedStats)
-//
-//     var statSelect = Object.values(barData).forEach(function(value) {
-//         Object.keys(value);
-//     });
-//
-//     var xBandScale = d3.scaleBand()
-//     .domain(rounds)
-//     .range([0, chartWidth])
-//     .padding(0.1);
-//
-//     var yLinearScale = d3.scaleLinear()
-//     .domain([0, maxStat])
-//     .range([chartHeight, 0]);
-//
-//     var bottomAxis = d3.axisBottom(xBandScale);
-//     var leftAxis = d3.axisLeft(yLinearScale).ticks(7);
-//
-//     chartGroup.append("g")
-//       .call(leftAxis);
-//
-//     chartGroup.append("g")
-//       .attr("transform", `translate(0, ${chartHeight})`)
-//       .call(bottomAxis);
-//
-//     chartGroup.selectAll(".bar")
-//       .enter()
-//       .append("rect")
-//       .attr("class", "bar")
-//       .attr("x", rounds)
-//       .attr("y", selectedStats)
-//       .attr("width", xBandScale.bandwidth())
-//       .attr("height", d => chartHeight - yLinearScale(selectedStats));
-//
-//     // var dropdown = d3.select("#roundbar")
-//     //                 .insert("select", "svg")
-//     //                 .on("change", dropdownChange);
-//     //
-//     // dropdown.selectAll("option")
-//     //       .data(statSelect)
-//     //       .enter().append("option")
-//     //       .attr("value", function (d) { return d; })
-//     //       .text(function (d) {
-//     //         return d;});
-//     //
-//     // var dropdownChange = function() {
-//     //     var newStat = d3.select(this).property('value')
-//     //   }
-//
-//   //   //
-//   //
-//   // };
-// });
-// }
-function nflData(stat) {
-  d3.json(`/search/${stat}`).then((data) => {
+function buildTable(stat) {
+  d3.json().then((data) => {
     buildTable(data);
 
 
@@ -157,6 +67,7 @@ function optionChanged(newData) {
 
 function buildBar(bdata) {
   var svg = d3.select("#roundbar")
+    .html("")
     .append("svg")
     .attr("height", svgHeight)
     .attr("width", svgWidth);
@@ -166,14 +77,16 @@ function buildBar(bdata) {
 
   d3.json('/bar').then((barData) => {
     barData.forEach((round) => {
+
       let selectedData = "Avg_Attempts"
+
       round.Draft_Round = round.Draft_Round
       round[`${selectedData}`] = +round[`${selectedData}`]
-    })
+    });
 
     var statSelect = Object.keys(barData[0])
     for ( var i = 0; i < statSelect.length; i++){
-      if ( statSelect[i] === "Draft_Round") {
+      if (statSelect[i] === "Draft_Round") {
         statSelect.splice(i, 1);
    }
 }
@@ -192,7 +105,7 @@ function buildBar(bdata) {
     var leftAxis = d3.axisLeft(yLinearScale).ticks(7);
 
     chartGroup.append("g")
-      .style("font", "14px sans-serif")
+      .attr("id", "yaxis")
       .call(leftAxis);
 
     chartGroup.append("g")
@@ -217,6 +130,7 @@ function buildBar(bdata) {
         .attr("x", 0 - (chartHeight / 2))
         .attr("dy", "1em")
         .attr("class", "axisText")
+        .attr("id", "yaxistext")
         .text(`${selectedData}`);
 
       chartGroup.append("text")
@@ -225,31 +139,36 @@ function buildBar(bdata) {
         .text("Draft Round");
 
       var yLinearScaleUpdate = chartGroup.append('g')
-        .attr("class", "y")
-        .call(leftAxis)
-
-      yLinearScaleUpdate.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - chartMargin.left + 2)
-        .attr("x", 0 - (chartHeight / 2))
-        .attr("dy", "1em")
-        .attr("class", "axisText")
-        .text(`${selectedData}`);
+          .call(leftAxis)
 
       var updateBar = function (data) {
-        yLinearScale.domain(d3.extent(data))
-        yLinearScaleUpdate.call(leftAxis)
+        d3.selectAll("#roundbar").select("#yaxis").remove()
+        d3.selectAll("#roundbar").select("#yaxistext").remove()
+        yLinearScale.domain([0, d3.max(barData, d => d[`${data}`])])
 
-        var bars = chartGroup.selectAll(".bar");
-        bars.data(barData)
-        .enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", d => xBandScale(d.Draft_Round))
-        .attr("y", d => yLinearScale(d[`${data}`]))
-        .attr("width", xBandScale.bandwidth())
-        .attr("fill", "rgb(68, 109, 186)")
-        .attr("height", d => chartHeight - yLinearScale(d[`${data}`]));
+        var bars = d3.selectAll("#roundbar");
+        bars.selectAll(".bar").remove();
+        chartGroup.selectAll("#roundbar")
+          .data(barData)
+          .enter()
+          .append("rect")
+          .attr("class", "bar")
+          .attr("x", d => xBandScale(d.Draft_Round))
+          .attr("y", d => yLinearScale(d[`${data}`]))
+          .attr("width", xBandScale.bandwidth())
+          .attr("fill", "rgb(68, 109, 186)")
+          .attr("height", d => chartHeight - yLinearScale(d[`${data}`]))
+
+          chartGroup.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - chartMargin.left + 2)
+            .attr("x", 0 - (chartHeight / 2))
+            .attr("dy", "1em")
+            .attr("class", "axisText")
+            .attr("id", "yaxistext")
+            .text(`${data}`);
+
+        yLinearScaleUpdate.call(leftAxis)
 
         bars.exit().remove();
       }
@@ -257,9 +176,9 @@ function buildBar(bdata) {
     var dropdown = d3.select("#roundbar")
                     .insert("select", "svg")
                     .on("change", function() {
-                        var newStat = d3.select(this).property('value')
-                        // var newStatData = barData[]
-                        console.log(newStat);
+                        var newStat = d3.select(this).property('value');
+                        updateBar(newStat);
+
                       });
 
     dropdown.selectAll("option")
@@ -268,11 +187,6 @@ function buildBar(bdata) {
           .attr("value", function (d) { return d; })
           .text(function (d) {
             return d;});
-
-
-  //   //
-  //
-  // };
 });
 };
 
