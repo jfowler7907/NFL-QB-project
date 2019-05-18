@@ -24,7 +24,7 @@
         <a class="nav-link" href="{{ url_for('home') }}">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('search') }}">NFL QB Search</a>
+        <a class="nav-link" href="{{ url_for('search') }}">NFL Data Search</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">API Documentation</a>
@@ -34,45 +34,53 @@
   </div>
 </nav>
 <div class="bg">
-  <div class="container" style="padding-top:100px">
+  <div class="container" style="padding-top:50px">
     <div class="jumbotron" style="background: rgba(0, 10, 10, 0.5);">
-      <h1 style="color:white; margin-top:-45px">Search Quaterbacks</h1>
+      <h1 style="color:white; margin-top:-45px">Compare Draft Round Statistics or Quaterback Statistics</h1>
       <br>
-        <h2 style="color:white">How you can seach:</h2>
-          <h6 style="color:white">You can either search for quaterbacks based on <b>Draft Year</b> or <b>Quaterback Name.</b></h6>
-        <br>
+      <div class="row">
         <h2 style="color:white">Search Criteria:</h2>
-        <h6 style="color:white">Seach by Draft Year
+        <div class="col-md-4">
+        <h6 style="color:white">Seach by Draft Round
           <fieldset style="margin-bottom:-10px">
-            <div class="col-lg-3" style="margin-left:-15px">
             <div class="form-group">
-              <select class="custom-select">
-              <option id="draftyear" selected="">Choose a Draft Year</option>
+              <select  id="draftround" onchange="optionChanged(this.value)" class="custom-select">
+              <option selected="">Choose a Draft Round</option>
               <!--Insert JS to append possible draft years based on API Call  -->
             </select>
-            <div class="btn-group-vertical" data-toggle="buttons">
-                <button type="button" class="btn btn-primary">Search</button></div>
-          </div>
           </div>
         </fieldset></h6>
-        <h4 style="color:white">OR</h4>
+        </div>
+        <h6 style="color:white">OR</h6>
+        <div class="col-md-4">
           <h6 style="color:white; margin-bottom:-45px">Choose a Quaterback:
             <fieldset>
-              <div class="col-lg-3" style="margin-left:-15px">
               <div class="form-group">
-              <select class="custom-select">
+              <select id="playerNames" onchange="optionChanged(this.value)" class="custom-select">
                 <option selected="">Choose a Quaterback</option>
-                <option id="playerNames" value="1">Value</option>
               </select>
-              <div class="btn-group-vertical" data-toggle="buttons">
-                  <button type="button" class="btn btn-primary">Search</button></div>
-            </div>
             </div>
           </fieldset>
             </h6>
-
+          </div>
+        </div>
     </div>
+    <div class="row">
+     <div class="col-md-12">
+       <div id="roundbar">
+         <!-- Placeholder for Draft Round comparison chart -->
+       </div>
+    </div>
+    </div>
+    <div class="row">
+     <div class="col-md-12">
+       <div id="roundtable">
+         <!-- Placeholder for Draft Round player table -->
+       </div>
   </div>
 </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
   </body>
 </html>
