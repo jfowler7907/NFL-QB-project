@@ -150,16 +150,14 @@ def rounds():
     # Return a list of the column names (sample names)
     return jsonify(roundList)
 
-@app.route("/line/")
-def line():
+@app.route("/line/<player>")
+def line(player):
     """Return the QBR data by years."""
     session = Session(engine)
-    results = session.query(QBRs.Player, QBRs.Year, QBRs.QBR)
+    sel = [QBRs.Player, QBRs.Year, QBRs.QBR]
+    results = session.query(*sel).filter(QBRs.Player == player).all()
     qbr_list = []
     qb = []
-    
-    # for result in results:
-    #     qb.append(str(result[0]))
 
     for result in results:
         qb.append(str(result[0]))
