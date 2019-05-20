@@ -23,6 +23,7 @@ Base.prepare(engine, reflect=True)
 
 # Save references to the table
 Stats = Base.classes.qb_stats2
+QBRs = Base.classes.qb_stats4
 
 # Create our session (link) from Python to the DB
 session = Session(engine)
@@ -149,6 +150,22 @@ def rounds():
     # Return a list of the column names (sample names)
     return jsonify(roundList)
 
+@app.route("/line/<player>")
+def line(player):
+    """Return the QBR data by years."""
+    session = Session(engine)
+    sel = [QBRs.Player, QBRs.Year, QBRs.QBR]
+    results = session.query(*sel).filter(QBRs.Player == player).all()
+    qbr_list = []
 
+    for result in results:
+        qbr_dict = {}
+        qbr_dict["Player"] = result[0]
+        qbr_dict["Year"] = result[1]
+        qbr_dict["QRB"] = result[2]
+        qbr_list.append(qbr_dict)
+    
+    return jsonify(qbr_list)
+    
 if __name__ == '__main__':
     app.run(debug=True)
