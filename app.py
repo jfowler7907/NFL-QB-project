@@ -157,10 +157,8 @@ def line(player):
     sel = [QBRs.Player, QBRs.Year, QBRs.QBR]
     results = session.query(*sel).filter(QBRs.Player == player).all()
     qbr_list = []
-    qb = []
 
     for result in results:
-        qb.append(str(result[0]))
         qbr_dict = {}
         qbr_dict["Player"] = result[0]
         qbr_dict["Year"] = result[1]
