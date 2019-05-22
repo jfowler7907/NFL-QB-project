@@ -59,8 +59,7 @@ function optionChanged(newData) {
     buildBar(stringData)
     // buildTable(stringData)
   } else {
-    console.log(stringData);
-    // PlayerData(newData);
+    PlayerData(newData);
     // otherPlayerData(newData);
   }
 }
@@ -190,5 +189,78 @@ function buildBar(bdata) {
 });
 };
 
+
+// Build line graph
+function PlayerData(playerData) {
+  var svg = d3.select("#roundbar")
+  .html("")
+  .append("svg")
+  .attr("width", svgWidth)
+  .attr("height", svgHeight);
+
+// Append a group area, then set its margins
+var chartGroup = svg.append("g")
+  .attr("transform", `translate(${chartMargin.left}, ${chartMargin.top})`);
+
+// Configure a parseTime function which will return a new Date object from a string
+//var parseTime = d3.timeParse("%Y");
+
+// Load data from playerData
+d3.json(`/line/${playerData}`).then((playerProfile)=> {
+
+ 
+// Print the forceData
+console.log(playerProfile);
+
+
+  // Format the date and cast the playerProfile value to a number
+  playerProfile.forEach(function(data) {
+    data.Year = +data.Year;
+    data.QRB = +data.QRB;
+
+  
+
+  // Configure a time scale
+  // d3.extent returns the an array containing the min and max values for the property specified
+  var xTimeScale = d3.scaleBand()
+    .domain(d3.extent(playerProfile.map(data => data.Year)))
+    .range([0, chartWidth]);
+
+  // Configure a linear scale with a range between the chartHeight and 0
+  var yLinearScale = d3.scaleLinear()
+    .domain([0, d3.max(playerProfile, d => d.QRB)])
+    .range([chartHeight, 0]);
+
+  // Create two new functions passing the scales in as arguments
+  // These will be used to create the chart's axes
+  var bottomAxis = d3.axisBottom(xTimeScale);
+  var leftAxis = d3.axisLeft(yLinearScale);
+
+  // Configure a line function which will plot the x and y coordinates using our scales
+  var drawLine = d3.line()
+    .x(data => xTimeScale(data.Year))
+    .y(data => yLinearScale(data.QRB));
+
+  // Append an SVG path and plot its points using the line function
+  chartGroup.append("path")
+
+  // The drawLine function returns the instructions for creating the line for forceData
+    .attr("d", drawLine(playerProfile))
+    .classed("line", true);
+
+  // Append an SVG group element to the chartGroup, create the left axis inside of it
+  chartGroup.append("g")
+    .classed("axis", true)
+    .call(leftAxis);
+
+  // Append an SVG group element to the chartGroup, create the bottom axis inside of it
+  // Translate the bottom axis to the bottom of the page
+  chartGroup.append("g")
+    .classed("axis", true)
+    .attr("transform", `translate(0, ${chartHeight})`)
+    .call(bottomAxis); 
+});
+});
+};
 
 init();
