@@ -208,17 +208,20 @@ var chartGroup = svg.append("g")
 // Load data from playerData
 d3.json(`/line/${playerData}`).then((playerProfile)=> {
 
- 
+
 // Print the forceData
 console.log(playerProfile);
-
+var deepProfile = playerProfile.forEach(function(data) {
+                    data.Year = data.Year;
+                    data.QBR = +data.QBR;
+});
 
   // Format the date and cast the playerProfile value to a number
   playerProfile.forEach(function(data) {
     data.Year = +data.Year;
-    data.QRB = +data.QRB;
+    data.QBR = +data.QBR;
 
-  
+
 
   // Configure a time scale
   // d3.extent returns the an array containing the min and max values for the property specified
@@ -228,7 +231,7 @@ console.log(playerProfile);
 
   // Configure a linear scale with a range between the chartHeight and 0
   var yLinearScale = d3.scaleLinear()
-    .domain([0, d3.max(playerProfile, d => d.QRB)])
+    .domain([0, d3.max(playerProfile, d => d.QBR)])
     .range([chartHeight, 0]);
 
   // Create two new functions passing the scales in as arguments
@@ -239,12 +242,10 @@ console.log(playerProfile);
   // Configure a line function which will plot the x and y coordinates using our scales
   var drawLine = d3.line()
     .x(data => xTimeScale(data.Year))
-    .y(data => yLinearScale(data.QRB));
+    .y(data => yLinearScale(data.QBR));
 
   // Append an SVG path and plot its points using the line function
   chartGroup.append("path")
-
-  // The drawLine function returns the instructions for creating the line for forceData
     .attr("d", drawLine(playerProfile))
     .classed("line", true);
 
@@ -258,7 +259,7 @@ console.log(playerProfile);
   chartGroup.append("g")
     .classed("axis", true)
     .attr("transform", `translate(0, ${chartHeight})`)
-    .call(bottomAxis); 
+    .call(bottomAxis);
 });
 });
 };

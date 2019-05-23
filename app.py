@@ -146,16 +146,27 @@ def line(player):
     """Return the QBR data by years."""
     session = Session(engine)
     sel = [QBRs.Player, QBRs.Year, QBRs.QBR]
+    sel2 = [QBRs.Year, QBRs.QBR]
     results = session.query(*sel).filter(QBRs.Player == player).all()
+    qbr_years=[]
     qbr_list = []
-
+    league_qbr = []
     for result in results:
         qbr_dict = {}
         qbr_dict["Player"] = result[0]
         qbr_dict["Year"] = result[1]
+        qbr_years.append(result[1])
         qbr_dict["QBR"] = result[2]
         qbr_list.append(qbr_dict)
 
+    results2 = session.query(func.avg(QBRs.QBR)).filter(QBRs.Year.between(min(qbr_years), max(qbr_years))).group_by(QBRs.Year).all()
+
+    for result in results2:
+        league_qbr.append(result[0])
+    qbr_dict = {}
+    qbr_dict["QBRs"] = league_qbr
+    print(qbr_dict)
+    qbr_list.append(qbr_dict)
     return jsonify(qbr_list)
 
 @app.route("/statsTable/<round>")
