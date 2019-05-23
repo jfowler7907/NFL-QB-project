@@ -80,16 +80,7 @@ def bar():
 @app.route("/search/")
 def search():
     return render_template("search.html")
- #     # session = Session(engine)
- #     # results2 = session.query(Stats.Player,Stats.Year_Drafted, Stats.Round_Drafted,
- #     #                         Stats.Overall_Pick, Stats.Draft_Position,
- #     #                         Stats.Avg_Attempts, Stats.Avg_Completions,
- #     #                         Stats.Avg_Passing_Yards, Stats.Avg_Yards_per_Attempt,
- #     #                         Stats.Avg_TDs, Stats.Avg_Sacks, Stats.Avg_Loss_of_Yards,
- #     #                         Stats.Avg_QBR_REAL, Stats.Avg_Points, Stats.Game_Total ).filter(Stats.Year_Drafted==2005).all()
- #
- #
- #
+
 
 
 @app.route("/search/<stats>")
@@ -155,17 +146,70 @@ def line(player):
     """Return the QBR data by years."""
     session = Session(engine)
     sel = [QBRs.Player, QBRs.Year, QBRs.QBR]
+    sel2 = [QBRs.Year, QBRs.QBR]
     results = session.query(*sel).filter(QBRs.Player == player).all()
+    qbr_years=[]
     qbr_list = []
-
+    league_qbr = []
     for result in results:
         qbr_dict = {}
         qbr_dict["Player"] = result[0]
         qbr_dict["Year"] = result[1]
-        qbr_dict["QRB"] = result[2]
+        qbr_years.append(result[1])
+        qbr_dict["QBR"] = result[2]
         qbr_list.append(qbr_dict)
-    
+    results2 = session.query(func.avg(QBRs.QBR)).filter(QBRs.Year.between(min(qbr_years), max(qbr_years))).group_by(QBRs.Year).all()
+    for result in results2:
+        league_qbr.append(result[0])
+    qbr_dict = {}
+    qbr_dict["QBRs"] = league_qbr
+    print(qbr_dict)
+    qbr_list.append(qbr_dict)
+ 
     return jsonify(qbr_list)
-    
+
+@app.route("/statsTable/<round>")
+def statsTable(round):
+    session = Session(engine)
+    sel = [
+        Stats.Player,
+        Stats.Year_Drafted,
+        Stats.Round_Drafted,
+        Stats.Overall_Pick,
+        Stats.Avg_Attempts,
+        Stats.Avg_Completions,
+        Stats.Avg_Passing_Yards,
+        Stats.Avg_Yards_per_Attempt,
+        Stats.Avg_TDs,
+        Stats.Avg_Sacks,
+        Stats.Avg_Loss_of_Yards,
+        Stats.Avg_QBR_REAL,
+        Stats.Avg_Points,
+        Stats.Game_Total,
+    ]
+    results = session.query(*sel).filter(Stats.Round_Drafted == round).all()
+    stat_table = []
+
+    for result in results:
+        stats_dict = {}
+        stats_dict["Player"] = result[0]
+        stats_dict["Year_Drafted"] = result[1]
+        stats_dict["Round_Drafted"] = result[2]
+        stats_dict["Overall_Pick"] = result[3]
+        stats_dict["Avg_Attempts"] = result[4]
+        stats_dict["Avg_Completions"] = result[5]
+        stats_dict["Avg_Passing_Yards"] = result[6]
+        stats_dict["Avg_Yards_per_Attempt"] = result[7]
+        stats_dict["Avg_TDs"] = result[8]
+        stats_dict["Avg_Sacks"] = result[9]
+        stats_dict["Avg_Loss_of_Yards"] = result[10]
+        stats_dict["Avg_QBR_REAL"] = result[11]
+        stats_dict["Avg_Points"] = result[12]
+        stats_dict["Game_Total"] = result[13]
+        stat_table.append(stats_dict)
+
+
+    return jsonify(stat_table)
+
 if __name__ == '__main__':
     app.run(debug=True)
