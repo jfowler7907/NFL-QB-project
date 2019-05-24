@@ -165,7 +165,7 @@ def line(player):
     qbr_dict["QBRs"] = league_qbr
     print(qbr_dict)
     qbr_list.append(qbr_dict)
- 
+
     return jsonify(qbr_list)
 
 @app.route("/statsTable/<round>")
