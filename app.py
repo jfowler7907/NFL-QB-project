@@ -158,15 +158,14 @@ def line(player):
         qbr_years.append(result[1])
         qbr_dict["QBR"] = result[2]
         qbr_list.append(qbr_dict)
-
     results2 = session.query(func.avg(QBRs.QBR)).filter(QBRs.Year.between(min(qbr_years), max(qbr_years))).group_by(QBRs.Year).all()
-
     for result in results2:
         league_qbr.append(result[0])
     qbr_dict = {}
     qbr_dict["QBRs"] = league_qbr
     print(qbr_dict)
     qbr_list.append(qbr_dict)
+
     return jsonify(qbr_list)
 
 @app.route("/statsTable/<round>")
