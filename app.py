@@ -230,16 +230,16 @@ def doubleBar(player):
 
     results = session.query(*sel).filter(Stats.Player == player).all()
 
-    qbr_years=[]
+    #qbr_years=[]
     qbr_statsAll = []
-    league_stats = []
+    #league_stats = []
 
     for result in results:
         qbr_dict = {}
-        qbr_dict["Player"] = result[0]
-        qbr_dict["Year"] = result[1]
-        qbr_years.append(result[1])
-        qbr_dict["Round_Drafted"] = result[2]
+        #qbr_dict["Player"] = result[0]
+        #qbr_dict["Year"] = result[1]
+        #qbr_years.append(result[1])
+        #qbr_dict["Round_Drafted"] = result[2]
         qbr_dict["Avg_Completions"] = result[3]
         qbr_dict["Avg_Passing_Yards"] = result[4]
         qbr_dict["Avg_Yards_per_Attempt"] = result[5]
@@ -249,18 +249,20 @@ def doubleBar(player):
         qbr_dict["Avg_QBR_REAL"] = result[9]
         qbr_dict["Avg_Points"] = result[10]
         qbr_dict["Game_Total"] = result[11]
+        qbr_dict["Avg_Attempts"] = result[12]
         qbr_statsAll.append(qbr_dict)
     
-    results2 = session.query(*sel2).filter(Stats.Year_Drafted.between(min(qbr_years), max(qbr_years))).all()
+    results2 = session.query(*sel2).all()
+    #.filter(Stats.Year_Drafted.between(min(qbr_years), max(qbr_years)))
       
     for result in results2:
             #league_stats.append(result[0])
         allStats_dict = {}
         #allStats_dict["QBRs"] = league_stats
-        allStats_dict["Player"] = result[0]
-        allStats_dict["Year"] = result[1]
-        qbr_years.append(result[1])
-        allStats_dict["Round_Drafted"] = result[2]
+        #allStats_dict["Player"] = result[0]
+        #allStats_dict["Year"] = result[1]
+        #qbr_years.append(result[1])
+        #allStats_dict["Round_Drafted"] = result[2]
         allStats_dict["Avg_Completions"] = result[3]
         allStats_dict["Avg_Passing_Yards"] = result[4]
         allStats_dict["Avg_Yards_per_Attempt"] = result[5]
@@ -270,6 +272,7 @@ def doubleBar(player):
         allStats_dict["Avg_QBR_REAL"] = result[9]
         allStats_dict["Avg_Points"] = result[10]
         allStats_dict["Game_Total"] = result[11]
+        allStats_dict["Avg_Attempts"] = result[12]
         print(allStats_dict)
         qbr_statsAll.append(allStats_dict)
  
