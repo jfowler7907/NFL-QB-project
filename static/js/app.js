@@ -223,6 +223,7 @@ function PlayerData(playerData) {
 // Load data from playerData
 d3.json(`/line/${playerData}`).then((playerProfile)=> {
 var leagueData = playerProfile.map(d=>d.QBRs).slice(-1)[0];
+  console.log(playerProfile);
    // Format the date and cast the playerProfile value to a number
   playerProfile.forEach(function(data) {
 
@@ -263,13 +264,19 @@ d3.json(`/doubleBar/${PlayerData}`).then((data)=>{
 var statName = d3.keys(data[0]);
 var individualStats = d3.values(data[0]);
 var allStats = data.map(d=>d);
+// var stats = data.map(d=>d);
+//   data.forEach(function(d){
+//     statName.push()
+//   })
+console.log(allStats);
 console.log(statName);
 console.log(individualStats);
+
 var trace1 = {
-  x: statName,
-  y: individualStats,
-  type: 'bar'
-};
+   x: statName,
+   y: individualStats,
+   type: 'bar'
+ };
 var trace2 = {
 x: statName,
 y: allStats,
@@ -280,7 +287,7 @@ var layout = {barmode: 'group'};
 Plotly.newPlot('roundtable', chart, layout);
 
 });
-};
 
+};
 
 init();
