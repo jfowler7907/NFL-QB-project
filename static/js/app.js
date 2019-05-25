@@ -214,7 +214,7 @@ function PlayerData(playerData) {
 
   svg = d3.select("#roundbar")
     .html("")
-  svg2 = d3.select("roundtable")
+  svg2 = d3.select("#roundtable")
     .html("")
 
   var yeardata = [];
@@ -259,6 +259,27 @@ Plotly.newPlot("roundbar", data1, layout);
 
 });
 
+d3.json(`/doubleBar/${PlayerData}`).then((data)=>{
+var statName = d3.keys(data[0]);
+var individualStats = d3.values(data[0]);
+var allStats = data.map(d=>d);
+console.log(statName);
+console.log(individualStats);
+var trace1 = {
+  x: statName,
+  y: individualStats,
+  type: 'bar'
+};
+var trace2 = {
+x: statName,
+y: allStats,
+type: 'bar'
+};
+var chart = [trace1, trace2];
+var layout = {barmode: 'group'};
+Plotly.newPlot('roundtable', chart, layout);
+
+});
 };
 
 
