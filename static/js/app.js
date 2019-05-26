@@ -15,35 +15,37 @@ var chartWidth = svgWidth - chartMargin.left - chartMargin.right;
 var chartHeight = svgHeight - chartMargin.top - chartMargin.bottom;
 
 function buildTable(round) {
-//   d3.json(`/statsTable/${round}`).then((data) => {
-//     var svg = d3.select("#roundtable")
-//       .html("")
-//       .append("svg")
-//       .attr("height", svgHeight)
-//       .attr("width", svgWidth);
-//     var tableData = data
-//
-//   var table = new Tabulator("roundtable", {
-//     data:tableData, //set initial table data
-//     columns:[
-//         {title:"Player", field:"Player"},
-//         {title:"Year Drafted", field:"Year_Drafted"},
-//         {title:"Round Drafted", field:"Round_Drafted"},
-//         {title:"Overall Pick", field:"Overall_Pick"},
-//         {title:"Avg Attempts", field:"Avg_Attempts"},
-//         {title:"Avg. Completions", field:"Avg_Completions"},
-//         {title:"Avg. Passing Yards", field:"Avg_Passing_Yards"},
-//         {title:"Avg. Yards/Attempt", field:"Avg_Yards_per_Attempt"},
-//         {title:"Avg. TDs", field:"Avg_TDs"},
-//         {title:"Avg. Sacks", field:"Avg_Sacks"},
-//         {title:"Avg. Loss of Yards", field:"Avg_Loss_of_Yards"},
-//         {title:"Avg. QBR", field:"Avg_QBR_REAL"},
-//         {title:"Avg. Points", field:"Avg_Points"},
-//         {title:"Total Games Played", field:"Game_Total"},
-//     ],
-// });
-//
-//   });
+  svg2 = d3.select("#roundtable")
+  .html("")
+    d3.json(`/statsTable/${round}`).then((data) => {
+    // var svg = d3.select("#roundtable")
+    //   .html("")
+    //   .append("svg")
+    //   .attr("height", svgHeight)
+    //   .attr("width", svgWidth);
+    var tableData = data
+
+  var table = new Tabulator("#roundtable", {
+    //data:tableData, //set initial table data
+    columns:[
+        {title:"Player", field:"Player"},
+        {title:"Year Drafted", field:"Year_Drafted"},
+        {title:"Round Drafted", field:"Round_Drafted"},
+        {title:"Overall Pick", field:"Overall_Pick"},
+        {title:"Avg Attempts", field:"Avg_Attempts"},
+        {title:"Avg. Completions", field:"Avg_Completions"},
+        {title:"Avg. Passing Yards", field:"Avg_Passing_Yards"},
+        {title:"Avg. Yards/Attempt", field:"Avg_Yards_per_Attempt"},
+        {title:"Avg. TDs", field:"Avg_TDs"},
+        {title:"Avg. Sacks", field:"Avg_Sacks"},
+        {title:"Avg. Loss of Yards", field:"Avg_Loss_of_Yards"},
+        {title:"Avg. QBR", field:"Avg_QBR_REAL"},
+        {title:"Avg. Points", field:"Avg_Points"},
+        {title:"Total Games Played", field:"Game_Total"},
+    ],
+});
+table.setData(tableData);
+  });
 };
 
 function init() {
@@ -223,7 +225,7 @@ function PlayerData(playerData) {
 // Load data from playerData
 d3.json(`/line/${playerData}`).then((playerProfile)=> {
 var leagueData = playerProfile.map(d=>d.QBRs).slice(-1)[0];
-  console.log(playerProfile);
+  //console.log(playerProfile);
    // Format the date and cast the playerProfile value to a number
   playerProfile.forEach(function(data) {
 
@@ -259,35 +261,39 @@ Plotly.newPlot("roundbar", data1, layout);
 
 
 });
+d3.json(`/doubleBar/${playerData}`).then((data)=>{
+  var statName = d3.keys(data[0]);
+  var individualStats = d3.values(data[0]);
+  var allStats = data.map(d=>d);
+  var totAvgs = d3.values(data[1]);
+  // var stats = data.map(d=>d);
+  //   data.forEach(function(d){
+  //     statName.push()
+  //   })
+  console.log(allStats);
+  console.log(statName);
+  console.log(individualStats);
+  
+  var trace1 = {
+     x: statName,
+     y: individualStats,
+     type: 'bar',
+     name: 'QB Stats'
+   };
+  var trace2 = {
+  x: statName,
+  y: totAvgs,
+  type: 'bar',
+  name: 'League Stats'
+  };
+  var chart = [trace1, trace2];
+  var layout = {barmode: 'group'};
+  Plotly.newPlot('roundtable', chart, layout);
+  
+  });
 
-d3.json(`/doubleBar/${PlayerData}`).then((data)=>{
-var statName = d3.keys(data[0]);
-var individualStats = d3.values(data[0]);
-var allStats = data.map(d=>d);
-// var stats = data.map(d=>d);
-//   data.forEach(function(d){
-//     statName.push()
-//   })
-console.log(allStats);
-console.log(statName);
-console.log(individualStats);
-
-var trace1 = {
-   x: statName,
-   y: individualStats,
-   type: 'bar'
- };
-var trace2 = {
-x: statName,
-y: allStats,
-type: 'bar'
 };
-var chart = [trace1, trace2];
-var layout = {barmode: 'group'};
-Plotly.newPlot('roundtable', chart, layout);
 
-});
-
-};
 
 init();
+
