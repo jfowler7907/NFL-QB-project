@@ -165,7 +165,7 @@ def line(player):
     qbr_dict["QBRs"] = league_qbr
     print(qbr_dict)
     qbr_list.append(qbr_dict)
- 
+
     return jsonify(qbr_list)
 
 @app.route("/statsTable/<round>")
@@ -210,6 +210,70 @@ def statsTable(round):
 
 
     return jsonify(stat_table)
+
+@app.route("/doubleBar/<player>")
+def doubleBar(player):
+    """Return the QBR data by years."""
+    session = Session(engine)
+
+    sel = [Stats.Player, Stats.Year_Drafted,Stats.Round_Drafted,Stats.Avg_Completions,
+    Stats.Avg_Passing_Yards,Stats.Avg_Yards_per_Attempt,
+    Stats.Avg_TDs,Stats.Avg_Sacks,Stats.Avg_Loss_of_Yards,Stats.Avg_QBR_REAL,
+    Stats.Avg_Points,Stats.Game_Total,Stats.Avg_Attempts]
+
+    sel2 = [Stats.Player, Stats.Year_Drafted,Stats.Round_Drafted,func.avg(Stats.Avg_Completions),
+    func.avg(Stats.Avg_Passing_Yards),func.avg(Stats.Avg_Yards_per_Attempt),
+    func.avg(Stats.Avg_TDs),func.avg(Stats.Avg_Sacks),
+    func.avg(Stats.Avg_Loss_of_Yards),func.avg(Stats.Avg_QBR_REAL),
+    func.avg(Stats.Avg_Points),func.avg(Stats.Game_Total),
+    func.avg(Stats.Avg_Attempts)]
+
+    results = session.query(*sel).filter(Stats.Player == player).all()
+
+    qbr_years=[]
+    qbr_statsAll = []
+    league_stats = []
+
+    for result in results:
+        qbr_dict = {}
+        qbr_dict["Player"] = result[0]
+        qbr_dict["Year"] = result[1]
+        qbr_years.append(result[1])
+        qbr_dict["Round_Drafted"] = result[2]
+        qbr_dict["Avg_Completions"] = result[3]
+        qbr_dict["Avg_Passing_Yards"] = result[4]
+        qbr_dict["Avg_Yards_per_Attempt"] = result[5]
+        qbr_dict["Avg_TDs"] = result[6]
+        qbr_dict["Avg_Sacks"] = result[7]
+        qbr_dict["Avg_Loss_of_Yards"] = result[8]
+        qbr_dict["Avg_QBR_REAL"] = result[9]
+        qbr_dict["Avg_Points"] = result[10]
+        qbr_dict["Game_Total"] = result[11]
+        qbr_statsAll.append(qbr_dict)
+    
+    results2 = session.query(*sel2).filter(Stats.Year_Drafted.between(min(qbr_years), max(qbr_years))).all()
+      
+    for result in results2:
+            #league_stats.append(result[0])
+        allStats_dict = {}
+        #allStats_dict["QBRs"] = league_stats
+        allStats_dict["Player"] = result[0]
+        allStats_dict["Year"] = result[1]
+        qbr_years.append(result[1])
+        allStats_dict["Round_Drafted"] = result[2]
+        allStats_dict["Avg_Completions"] = result[3]
+        allStats_dict["Avg_Passing_Yards"] = result[4]
+        allStats_dict["Avg_Yards_per_Attempt"] = result[5]
+        allStats_dict["Avg_TDs"] = result[6]
+        allStats_dict["Avg_Sacks"] = result[7]
+        allStats_dict["Avg_Loss_of_Yards"] = result[8]
+        allStats_dict["Avg_QBR_REAL"] = result[9]
+        allStats_dict["Avg_Points"] = result[10]
+        allStats_dict["Game_Total"] = result[11]
+        print(allStats_dict)
+        qbr_statsAll.append(allStats_dict)
+ 
+    return jsonify(qbr_statsAll)
 
 if __name__ == '__main__':
     app.run(debug=True)
