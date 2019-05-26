@@ -214,7 +214,11 @@ function PlayerData(playerData) {
 
   svg = d3.select("#roundbar")
     .html("")
+<<<<<<< HEAD
   svg2 = d3.select("roundtable")
+=======
+  svg2 = d3.select("#roundtable")
+>>>>>>> 19365b38edb7a011a7e2d4bf69d6837da05cdd65
     .html("")
 
   var yeardata = [];
@@ -223,6 +227,7 @@ function PlayerData(playerData) {
 // Load data from playerData
 d3.json(`/line/${playerData}`).then((playerProfile)=> {
 var leagueData = playerProfile.map(d=>d.QBRs).slice(-1)[0];
+  console.log(playerProfile);
    // Format the date and cast the playerProfile value to a number
   playerProfile.forEach(function(data) {
 
@@ -257,9 +262,43 @@ Plotly.newPlot("roundbar", data1, layout);
 });
 
 
+<<<<<<< HEAD
+=======
+});
+
+d3.json(`/doubleBar/${PlayerData}`).then((data)=>{
+var statName = d3.keys(data[0]);
+var individualStats = d3.values(data[0]);
+var allStats = data.map(d=>d);
+// var stats = data.map(d=>d);
+//   data.forEach(function(d){
+//     statName.push()
+//   })
+console.log(allStats);
+console.log(statName);
+console.log(individualStats);
+
+var trace1 = {
+   x: statName,
+   y: individualStats,
+   type: 'bar'
+ };
+var trace2 = {
+x: statName,
+y: allStats,
+type: 'bar'
+};
+var chart = [trace1, trace2];
+var layout = {barmode: 'group'};
+Plotly.newPlot('roundtable', chart, layout);
+
+>>>>>>> 19365b38edb7a011a7e2d4bf69d6837da05cdd65
 });
 
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 19365b38edb7a011a7e2d4bf69d6837da05cdd65
 init();
