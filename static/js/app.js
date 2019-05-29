@@ -17,35 +17,38 @@ var chartHeight = svgHeight - chartMargin.top - chartMargin.bottom;
 function buildTable(round) {
   svg2 = d3.select("#roundtable")
   .html("")
-    d3.json(`/statsTable/${round}`).then((data) => {
-    // var svg = d3.select("#roundtable")
-    //   .html("")
-    //   .append("svg")
-    //   .attr("height", svgHeight)
-    //   .attr("width", svgWidth);
-    var tableData = data
+  .append("svg2")
+  .attr("id", "table")
+  .attr("height", svgHeight)
+  .attr("width", svgWidth);
+    
+  d3.json(`/statsTable/${round}`).then((data) => {
+  var tableData = data
 
-  var table = new Tabulator("#roundtable", {
-    //data:tableData, //set initial table data
-    columns:[
-        {title:"Player", field:"Player"},
-        {title:"Year Drafted", field:"Year_Drafted"},
-        {title:"Round Drafted", field:"Round_Drafted"},
-        {title:"Overall Pick", field:"Overall_Pick"},
-        {title:"Avg Attempts", field:"Avg_Attempts"},
-        {title:"Avg. Completions", field:"Avg_Completions"},
-        {title:"Avg. Passing Yards", field:"Avg_Passing_Yards"},
-        {title:"Avg. Yards/Attempt", field:"Avg_Yards_per_Attempt"},
-        {title:"Avg. TDs", field:"Avg_TDs"},
-        {title:"Avg. Sacks", field:"Avg_Sacks"},
-        {title:"Avg. Loss of Yards", field:"Avg_Loss_of_Yards"},
-        {title:"Avg. QBR", field:"Avg_QBR_REAL"},
-        {title:"Avg. Points", field:"Avg_Points"},
-        {title:"Total Games Played", field:"Game_Total"},
-    ],
+var table = new Tabulator("#table", {
+  tooltips:true,
+  layout:"fitData",
+  pagination:"local",
+  paginationSize:10,
+  columns:[
+      {title:"Player", field:"Player"},
+      {title:"Year Drafted", field:"Year_Drafted"},
+      {title:"Round Drafted", field:"Round_Drafted"},
+      {title:"Overall Pick", field:"Overall_Pick"},
+      {title:"Avg Attempts", field:"Avg_Attempts"},
+      {title:"Avg. Completions", field:"Avg_Completions"},
+      {title:"Avg. Passing Yards", field:"Avg_Passing_Yards"},
+      {title:"Avg. Yards/Attempt", field:"Avg_Yards_per_Attempt"},
+      {title:"Avg. TDs", field:"Avg_TDs"},
+      {title:"Avg. Sacks", field:"Avg_Sacks"},
+      {title:"Avg. Loss of Yards", field:"Avg_Loss_of_Yards"},
+      {title:"Avg. QBR", field:"Avg_QBR_REAL"},
+      {title:"Avg. Points", field:"Avg_Points"},
+      {title:"Total Games Played", field:"Game_Total"},
+  ],
 });
 table.setData(tableData);
-  });
+});
 };
 
 function init() {
@@ -79,9 +82,8 @@ function optionChanged(newData) {
     buildBar(stringData)
     buildTable(stringData)
   } else {
-    //PlayerData(newData);
     PlayerData(stringData);
-    // otherPlayerData(newData);
+
   }
 }
 
@@ -90,7 +92,8 @@ function buildBar(bdata) {
     .html("")
     .append("svg")
     .attr("height", svgHeight)
-    .attr("width", svgWidth);
+    .attr("width", svgWidth)
+    .attr("class","bar-bg");
 
   var chartGroup = svg.append("g")
     .attr("transform", `translate(${chartMargin.left}, ${chartMargin.top})`);
@@ -225,18 +228,17 @@ function PlayerData(playerData) {
 // Load data from playerData
 d3.json(`/line/${playerData}`).then((playerProfile)=> {
 var leagueData = playerProfile.map(d=>d.QBRs).slice(-1)[0];
-  //console.log(playerProfile);
    // Format the date and cast the playerProfile value to a number
   playerProfile.forEach(function(data) {
 
     yeardata.push(data.Year);
     QBRdata.push(data.QBR);
-  //console.log(data);
 
 var trace1 = {
   x: yeardata,
   y: QBRdata,
   mode: "lines+markers",
+  name: `${playerData}'s QBR`
 };
 
 var trace2 = {
@@ -245,7 +247,8 @@ var trace2 = {
   mode: "lines+markers",
   line: {
     dash: "dot", width: 4
-  }
+  },
+  name:"League Average QBR"
 };
 
 var data1 = [
@@ -253,7 +256,7 @@ var data1 = [
 ]
 
 var layout = {
-  title: "QBR over time"
+  title:`${playerData}'s QBR over time`
 };
 
 Plotly.newPlot("roundbar", data1, layout);
@@ -266,10 +269,7 @@ d3.json(`/doubleBar/${playerData}`).then((data)=>{
   var individualStats = d3.values(data[0]);
   var allStats = data.map(d=>d);
   var totAvgs = d3.values(data[1]);
-  // var stats = data.map(d=>d);
-  //   data.forEach(function(d){
-  //     statName.push()
-  //   })
+
   console.log(allStats);
   console.log(statName);
   console.log(individualStats);
@@ -278,7 +278,7 @@ d3.json(`/doubleBar/${playerData}`).then((data)=>{
      x: statName,
      y: individualStats,
      type: 'bar',
-     name: 'QB Stats'
+     name: `${playerData} `
    };
   var trace2 = {
   x: statName,
@@ -287,7 +287,9 @@ d3.json(`/doubleBar/${playerData}`).then((data)=>{
   name: 'League Stats'
   };
   var chart = [trace1, trace2];
-  var layout = {barmode: 'group'};
+  var layout = {barmode: 'group',
+  title:`${playerData}'s Stats vs. League Average`
+};
   Plotly.newPlot('roundtable', chart, layout);
   
   });
@@ -296,4 +298,3 @@ d3.json(`/doubleBar/${playerData}`).then((data)=>{
 
 
 init();
-
