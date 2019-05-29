@@ -118,10 +118,6 @@ def names():
     for x in players:
         playerList.append(str(x[0]))
 
-    #  Use Pandas to perform the sql query
-    #stmt = session.query(Stats.Player).statement
-    #df = pd.read_sql_query(stmt, session.bind)
-
     # Return a list of the column names (sample names)
     return jsonify(playerList)
 
@@ -134,9 +130,7 @@ def rounds():
     for x in rounds:
         roundList.append(x[0])
 
-    #  Use Pandas to perform the sql query
-    #stmt = session.query(Stats.Player).statement
-    #df = pd.read_sql_query(stmt, session.bind)
+
 
     # Return a list of the column names (sample names)
     return jsonify(roundList)
@@ -230,53 +224,41 @@ def doubleBar(player):
 
     results = session.query(*sel).filter(Stats.Player == player).all()
 
-    #qbr_years=[]
-    qbr_statsAll = []
-    #league_stats = []
+    qb_statsAll = []
+
 
     for result in results:
-        qbr_dict = {}
-        #qbr_dict["Player"] = result[0]
-        #qbr_dict["Year"] = result[1]
-        #qbr_years.append(result[1])
-        #qbr_dict["Round_Drafted"] = result[2]
-        qbr_dict["Avg_Completions"] = result[3]
-        qbr_dict["Avg_Passing_Yards"] = result[4]
-        qbr_dict["Avg_Yards_per_Attempt"] = result[5]
-        qbr_dict["Avg_TDs"] = result[6]
-        qbr_dict["Avg_Sacks"] = result[7]
-        qbr_dict["Avg_Loss_of_Yards"] = result[8]
-        qbr_dict["Avg_QBR_REAL"] = result[9]
-        qbr_dict["Avg_Points"] = result[10]
-        qbr_dict["Game_Total"] = result[11]
-        qbr_dict["Avg_Attempts"] = result[12]
-        qbr_statsAll.append(qbr_dict)
+        qb_dict = {}
+        qb_dict["Avg_Completions"] = result[3]
+        qb_dict["Avg_Passing_Yards"] = result[4]
+        qb_dict["Avg_Yards_per_Attempt"] = result[5]
+        qb_dict["Avg_TDs"] = result[6]
+        qb_dict["Avg_Sacks"] = result[7]
+        qb_dict["Avg_Loss_of_Yards"] = result[8]
+        qb_dict["Avg_QBR_REAL"] = result[9]
+        qb_dict["Avg_Points"] = result[10]
+        qb_dict["Game_Total"] = result[11]
+        qb_dict["Avg_Attempts"] = result[12]
+        qb_statsAll.append(qb_dict)
     
     results2 = session.query(*sel2).all()
-    #.filter(Stats.Year_Drafted.between(min(qbr_years), max(qbr_years)))
       
     for result in results2:
-            #league_stats.append(result[0])
-        allStats_dict = {}
-        #allStats_dict["QBRs"] = league_stats
-        #allStats_dict["Player"] = result[0]
-        #allStats_dict["Year"] = result[1]
-        #qbr_years.append(result[1])
-        #allStats_dict["Round_Drafted"] = result[2]
-        allStats_dict["Avg_Completions"] = result[3]
-        allStats_dict["Avg_Passing_Yards"] = result[4]
-        allStats_dict["Avg_Yards_per_Attempt"] = result[5]
-        allStats_dict["Avg_TDs"] = result[6]
-        allStats_dict["Avg_Sacks"] = result[7]
-        allStats_dict["Avg_Loss_of_Yards"] = result[8]
-        allStats_dict["Avg_QBR_REAL"] = result[9]
-        allStats_dict["Avg_Points"] = result[10]
-        allStats_dict["Game_Total"] = result[11]
-        allStats_dict["Avg_Attempts"] = result[12]
-        print(allStats_dict)
-        qbr_statsAll.append(allStats_dict)
+        qb_dict = {}
+        qb_dict["Avg_Completions_All"] = result[3]
+        qb_dict["Avg_Passing_Yards_All"] = result[4]
+        qb_dict["Avg_Yards_per_Attempt_All"] = result[5]
+        qb_dict["Avg_TDs_All"] = result[6]
+        qb_dict["Avg_Sacks_All"] = result[7]
+        qb_dict["Avg_Loss_of_Yards_All"] = result[8]
+        qb_dict["Avg_QBR_REAL_All"] = result[9]
+        qb_dict["Avg_Points_All"] = result[10]
+        qb_dict["Game_Total_All"] = result[11]
+        qb_dict["Avg_Attempts_All"] = result[12]
+        print(qb_dict)
+        qb_statsAll.append(qb_dict)
  
-    return jsonify(qbr_statsAll)
+    return jsonify(qb_statsAll)
 
 if __name__ == '__main__':
     app.run(debug=True)
