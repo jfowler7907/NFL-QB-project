@@ -1,6 +1,7 @@
 ##################################################
 #Import Dependencies
 ##################################################
+import os
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -9,29 +10,32 @@ from sqlalchemy import create_engine, func
 from flask import Flask, jsonify, render_template
 import sqlite3
 import pandas as pd
+from flask_sqlalchemy import SQLAlchemy
 
+#################################################
+# Flask Setup
+#################################################
+app = Flask(__name__)
 
 #################################################
 # Database Setup
 #################################################
-engine = create_engine("sqlite:///nfl_etl.sqlite")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///nfl_etl.sqlite"
+db = SQLAlchemy(app)
+#engine = create_engine("sqlite:///nfl_etl.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
 # reflect the tables
-Base.prepare(engine, reflect=True)
+Base.prepare(db.engine, reflect=True)
 
 # Save references to the table
 Stats = Base.classes.qb_stats2
 QBRs = Base.classes.qb_stats4
 
 # Create our session (link) from Python to the DB
-session = Session(engine)
+session = Session(db.engine)
 
-#################################################
-# Flask Setup
-#################################################
-app = Flask(__name__)
 
 #################################################
 # Flask Routes
@@ -46,7 +50,7 @@ def home():
 @app.route("/bar/")
 def bar():
     """Return a list of all stats"""
-    session = Session(engine)
+    session = Session(db.engine)
     sel = [Stats.Round_Drafted,func.avg(Stats.Avg_Completions),
     func.avg(Stats.Avg_Passing_Yards),func.avg(Stats.Avg_Yards_per_Attempt),
     func.avg(Stats.Avg_TDs),func.avg(Stats.Avg_Sacks),
@@ -62,16 +66,16 @@ def bar():
     for a in results:
         player_dict = {}
         player_dict["Draft_Round"] = a[0]
-        player_dict["Avg_Attempts"] = a[1]
-        player_dict["Avg_Completions"] = a[2]
-        player_dict["Avg_Passing_Yards"] = a[3]
-        player_dict["Avg_Yards_per_Attempt"] = a[4]
-        player_dict["Avg_TDs"] = a[5]
-        player_dict["Avg_Sacks"] = a[6]
-        player_dict["Avg_Loss_of_Yards"] = a[7]
-        player_dict["Avg_QBR"] = a[8]
-        player_dict["Avg_Points"] = a[9]
-        player_dict["Game_Total"] = a[10]
+        player_dict["Avg_Attempts"] = a[10]
+        player_dict["Avg_Completions"] = a[1]
+        player_dict["Avg_Passing_Yards"] = a[2]
+        player_dict["Avg_Yards_per_Attempt"] = a[3]
+        player_dict["Avg_TDs"] = a[4]
+        player_dict["Avg_Sacks"] = a[5]
+        player_dict["Avg_Loss_of_Yards"] = a[6]
+        player_dict["Avg_QBR"] = a[7]
+        player_dict["Avg_Points"] = a[8]
+        player_dict["Game_Total"] = a[9]
 
         stats_list.append(player_dict)
 
@@ -82,37 +86,10 @@ def search():
     return render_template("search.html")
 
 
-
-@app.route("/search/<stats>")
-def qb_stats2(stats):
-    #Return the round for a given player
-    session=Session(engine)
-    sel = [
-        Stats.stats,
-        Stats.Player,
-        Stats.Year_Drafted,
-        Stats.Round_Drafted,
-        Stats.Overall_Pick,
-        Stats.Draft_Position,
-        Stats.Avg_Attempts,
-        Stats.Avg_Completions,
-        Stats.Avg_Passing_Yards,
-        Stats.Avg_Yards_per_Attempt,
-        Stats.Avg_TDs,
-        Stats.Avg_Sacks,
-        Stats.Avg_Loss_of_Yards,
-        Stats.Avg_QBR_REAL,
-        Stats.Avg_Points,
-        Stats.Game_Total,
-    ]
-
-    results = session.query(*sel).filter(Stats.stats == stats).groupby("Round_Drafted")
-
-
 @app.route("/names")
 def names():
     """Return a list of player names."""
-    session = Session(engine)
+    session = Session(db.engine)
     players = session.query(Stats.Player).all()
     playerList = []
     for x in players:
@@ -124,7 +101,7 @@ def names():
 @app.route("/rounds")
 def rounds():
     """Return a list of player names."""
-    session = Session(engine)
+    session = Session(db.engine)
     rounds = session.query(Stats.Round_Drafted).distinct().order_by(Stats.Round_Drafted.asc())
     roundList = []
     for x in rounds:
@@ -138,7 +115,7 @@ def rounds():
 @app.route("/line/<player>")
 def line(player):
     """Return the QBR data by years."""
-    session = Session(engine)
+    session = Session(db.engine)
     sel = [QBRs.Player, QBRs.Year, QBRs.QBR]
     sel2 = [QBRs.Year, QBRs.QBR]
     results = session.query(*sel).filter(QBRs.Player == player).all()
@@ -164,7 +141,7 @@ def line(player):
 
 @app.route("/statsTable/<round>")
 def statsTable(round):
-    session = Session(engine)
+    session = Session(db.engine)
     sel = [
         Stats.Player,
         Stats.Year_Drafted,
@@ -208,7 +185,7 @@ def statsTable(round):
 @app.route("/doubleBar/<player>")
 def doubleBar(player):
     """Return the QBR data by years."""
-    session = Session(engine)
+    session = Session(db.engine)
 
     sel = [Stats.Player, Stats.Year_Drafted,Stats.Round_Drafted,Stats.Avg_Completions,
     Stats.Avg_Passing_Yards,Stats.Avg_Yards_per_Attempt,
